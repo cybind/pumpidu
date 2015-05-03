@@ -5,21 +5,30 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || 
 
 var pc; // PeerConnection
 
+var SERVER_IP = '';
+var SERVER_PORT = '1234';
 
-// Step 1. getUserMedia
+// DOM elements manipulated as user interacts with the app
+var callButton = document.querySelector("#callButton");
+var localVideo = document.querySelector("#localVideo");
+var remoteVideo = document.querySelector("#remoteVideo");
+
+callButton.addEventListener('click', createOffer);
+
+// Step 1
 navigator.getUserMedia({
         audio: true,
         video: true
     },
     gotStream,
     function(error) {
-        console.log(error)
+        console.log(error);
     }
 );
 
 function gotStream(stream) {
-    document.getElementById("callButton").style.display = 'inline-block';
-    document.getElementById("localVideo").src = URL.createObjectURL(stream);
+    callButton.style.display = 'block';
+    localVideo.src = URL.createObjectURL(stream);
 
     pc = new PeerConnection(null);
     pc.addStream(stream);
@@ -27,13 +36,12 @@ function gotStream(stream) {
     pc.onaddstream = gotRemoteStream;
 }
 
-
-// Step 2. createOffer
+// Step 2
 function createOffer() {
     pc.createOffer(
         gotLocalDescription,
         function(error) {
-            console.log(error)
+            console.log(error);
         }, {
             'mandatory': {
                 'OfferToReceiveAudio': true,
@@ -43,13 +51,12 @@ function createOffer() {
     );
 }
 
-
-// Step 3. createAnswer
+// Step 3
 function createAnswer() {
     pc.createAnswer(
         gotLocalDescription,
         function(error) {
-            console.log(error)
+            console.log(error);
         }, {
             'mandatory': {
                 'OfferToReceiveAudio': true,
@@ -58,7 +65,6 @@ function createAnswer() {
         }
     );
 }
-
 
 function gotLocalDescription(description) {
     pc.setLocalDescription(description);
@@ -77,15 +83,11 @@ function gotIceCandidate(event) {
 }
 
 function gotRemoteStream(event) {
-    document.getElementById("remoteVideo").src = URL.createObjectURL(event.stream);
+    remoteVideo.src = URL.createObjectURL(event.stream);
 }
 
-
-////////////////////////////////////////////////
-// Socket.io
-
-var socket = io.connect('', {
-    port: 1234
+var socket = io.connect(SERVER_IP, {
+    port: SERVER_PORT
 });
 
 function sendMessage(message) {
