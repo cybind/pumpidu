@@ -1,11 +1,7 @@
-var static = require('node-static');
 var http = require('http');
-var file = new(static.Server)();
 var SERVER_PORT = '1234';
 
-var app = http.createServer(function(req, res) {
-    file.serve(req, res);
-}).listen(SERVER_PORT);
+var app = http.createServer().listen(SERVER_PORT);
 
 var io = require('socket.io').listen(app);
 

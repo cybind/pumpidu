@@ -1,4 +1,9 @@
-document.addEventListener('deviceready', init, false);
+var isBrowser = document.URL.indexOf( 'http://' ) !== -1 || document.URL.indexOf( 'https://' ) !== -1;
+if ( !isBrowser ) {
+    document.addEventListener('deviceready', init, false);
+} else {
+    init();
+}
 
 function init() {
 
@@ -91,11 +96,11 @@ function init() {
         remoteVideo.src = URL.createObjectURL(event.stream);
     }
 
+    var socket = io.connect('http://' + SERVER_IP + ':' + SERVER_PORT);
+
     function sendMessage(message) {
         socket.emit('message', message);
     }
-
-    var socket = io.connect('http://' + SERVER_IP + ':' + SERVER_PORT);
 
     socket.on('message', function(message) {
         if (message.type === 'offer') {
