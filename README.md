@@ -43,7 +43,6 @@ We need to have signaling (STUN) server:
 ```
 $ cd server
 $ npm install
-$ node server.js
 ```
 
 ### Rinning
